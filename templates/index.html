@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diabetes Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ---------- Global Styles ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Circles */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ---------- Main Container ---------- */
+        .container-wrapper {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .prediction-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ---------- Header Section ---------- */
+        .card-header-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-header-custom::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 20px solid #764ba2;
+        }
+
+        .card-header-custom i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .card-header-custom h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .card-header-custom p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* ---------- Form Section ---------- */
+        .card-body-custom {
+            padding: 40px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .input-group-wrapper {
+            margin-bottom: 20px;
+        }
+
+        /* ---------- Predict Button ---------- */
+        .btn-predict {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-predict:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-predict i {
+            margin-left: 8px;
+        }
+
+        /* ---------- Result Section ---------- */
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+            border: 3px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .result:hover::before {
+            left: 100%;
+        }
+
+        .result-positive {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-color: #ff5252;
+            color: white;
+        }
+
+        .result-negative {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            border-color: #2f9e44;
+            color: white;
+        }
+
+        .result h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .result i {
+            font-size: 30px;
+        }
+
+        .result p {
+            margin: 10px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ---------- Info Section ---------- */
+        .info-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .info-section h5 {
+            color: #1565c0;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-section ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #1976d2;
+        }
+
+        .info-section li {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* ---------- Responsive Design ---------- */
+        @media (max-width: 768px) {
+            .card-body-custom {
+                padding: 25px 20px;
+            }
+
+            .card-header-custom h2 {
+                font-size: 24px;
+            }
+
+            .card-header-custom i {
+                font-size: 40px;
+            }
+
+            .result h3 {
+                font-size: 20px;
+            }
+
+            body::before,
+            body::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container-wrapper {
+                padding: 0 10px;
+            }
+
+            .card-header-custom {
+                padding: 25px 15px;
+            }
+
+            .card-body-custom {
+                padding: 20px 15px;
+            }
+
+            .btn-predict {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .form-label {
+                font-size: 14px;
+            }
+        }
+
+        /* ---------- Loading Animation ---------- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-wrapper">
+    <div class="prediction-card">
+        <!-- Header -->
+        <div class="card-header-custom">
+            <i class="fas fa-heartbeat"></i>
+            <h2>Diabetes Prediction System</h2>
+            <p>Enter your health metrics for AI-powered diabetes risk assessment</p>
+        </div>
+
+        <!-- Form Body -->
+        <div class="card-body-custom">
+            <form action="/predict" method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-baby"></i>
+                                Pregnancies
+                            </label>
+                            <input type="number" step="any" name="Pregnancies" class="form-control" placeholder="Number of pregnancies" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-tint"></i>
+                                Glucose Level
+                            </label>
+                            <input type="number" step="any" name="Glucose" class="form-control" placeholder="Plasma glucose (mg/dL)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-heart"></i>
+                                Blood Pressure
+                            </label>
+                            <input type="number" step="any" name="BloodPressure" class="form-control" placeholder="Diastolic BP (mm Hg)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-ruler"></i>
+                                Skin Thickness
+                            </label>
+                            <input type="number" step="any" name="SkinThickness" class="form-control" placeholder="Triceps skinfold (mm)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-syringe"></i>
+                                Insulin Level
+                            </label>
+                            <input type="number" step="any" name="Insulin" class="form-control" placeholder="2-Hour serum insulin (mu U/ml)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-weight"></i>
+                                BMI
+                            </label>
+                            <input type="number" step="any" name="BMI" class="form-control" placeholder="Body mass index (kg/m²)" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-dna"></i>
+                                Pedigree Function
+                            </label>
+                            <input type="number" step="any" name="DiabetesPedigreeFunction" class="form-control" placeholder="Diabetes pedigree function" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group-wrapper">
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Age
+                            </label>
+                            <input type="number" step="any" name="Age" class="form-control" placeholder="Age in years" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-predict">
+                    Predict Diabetes Risk
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Result Section -->
+            {% if prediction %}
+                {% if 'Positive' in prediction or 'Diabetic' in prediction %}
+                <div class="result result-positive">
+                    <h3>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ prediction }}
+                    </h3>
+                    <p>Please consult with a healthcare professional for proper diagnosis and treatment</p>
+                </div>
+                {% else %}
+                <div class="result result-negative">
+                    <h3>
+                        <i class="fas fa-check-circle"></i>
+                        {{ prediction }}
+                    </h3>
+                    <p>Maintain a healthy lifestyle to keep your diabetes risk low</p>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Info Section -->
+            <div class="info-section">
+                <h5>
+                    <i class="fas fa-info-circle"></i>
+                    Important Information
+                </h5>
+                <ul>
+                    <li>This is a screening tool and not a diagnostic test</li>
+                    <li>Consult with healthcare professionals for accurate diagnosis</li>
+                    <li>Regular health check-ups are recommended</li>
+                    <li>Maintain healthy diet and exercise routine</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
