@@ -39,6 +39,7 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
             animation: float 20s infinite ease-in-out;
+            z-index: 0;
         }
 
         body::before {
@@ -237,12 +238,14 @@
             left: 100%;
         }
 
+        /* RED: For Diabetic */
         .result-positive {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             border-color: #ff5252;
             color: white;
         }
 
+        /* GREEN: For Not Diabetic */
         .result-negative {
             background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
             border-color: #2f9e44;
@@ -361,11 +364,19 @@
 <body>
 
 <div class="container-wrapper">
+    
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="/" class="text-white text-decoration-none fw-bold">
+            <i class="fas fa-arrow-left me-2"></i>Back to Home
+        </a>
+    </div>
+
     <div class="prediction-card">
         <!-- Header -->
         <div class="card-header-custom">
             <i class="fas fa-heartbeat"></i>
-            <h2>Diabetes Prediction System</h2>
+            <h2>Early-Stage Diabetes Prediction System</h2>
             <p>Enter your health metrics for AI-powered diabetes risk assessment</p>
         </div>
 
@@ -462,23 +473,28 @@
 
             <!-- Result Section -->
             {% if prediction %}
-                {% if 'Positive' in prediction or 'Diabetic' in prediction %}
-                <div class="result result-positive">
-                    <h3>
-                        <i class="fas fa-exclamation-triangle"></i>
-                        {{ prediction }}
-                    </h3>
-                    <p>Please consult with a healthcare professional for proper diagnosis and treatment</p>
-                </div>
+                
+                <!-- If Result is Diabetic (RED) -->
+                {% if prediction == 'Diabetic' %}
+                    <div class="result result-positive">
+                        <h3>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ prediction }}
+                        </h3>
+                        <p>Risk Detected. Please consult with a healthcare professional for proper diagnosis and treatment.</p>
+                    </div>
+
+                <!-- If Result is Not Diabetic (GREEN) -->
                 {% else %}
-                <div class="result result-negative">
-                    <h3>
-                        <i class="fas fa-check-circle"></i>
-                        {{ prediction }}
-                    </h3>
-                    <p>Maintain a healthy lifestyle to keep your diabetes risk low</p>
-                </div>
+                    <div class="result result-negative">
+                        <h3>
+                            <i class="fas fa-check-circle"></i>
+                            {{ prediction }}
+                        </h3>
+                        <p>Great news! Your metrics suggest a low risk. Keep maintaining a healthy lifestyle.</p>
+                    </div>
                 {% endif %}
+
             {% endif %}
 
             <!-- Info Section -->

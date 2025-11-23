@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health AI - Smart Diabetes Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --text-light: #e0e0e0;
+            --text-lighter: #ffffff;
+            --button-bg: #ffffff;
+            --button-text: #764ba2;
+            --button-hover-shadow: 0 12px 25px rgba(0,0,0,0.3);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            --accent-color: #a77be3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-lighter);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Blobs */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .background-animation li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+        }
+        .background-animation li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .background-animation li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .background-animation li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .background-animation li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .background-animation li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .background-animation li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .background-animation li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .background-animation li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .background-animation li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .background-animation li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 11s; }
+
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        /* Main Container */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        /* Hero Section */
+        .hero-container {
+            background: var(--card-bg);
+            padding: 4rem 3rem;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--card-shadow);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            animation: fadeInScale 0.8s ease-out forwards;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 3rem;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 3.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-lighter);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            opacity: 0.95;
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            font-weight: 300;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 16px 45px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--button-hover-shadow);
+        }
+        .btn-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover .btn-icon {
+            transform: translateX(5px);
+        }
+
+        /* Features Section */
+        .features-section {
+            max-width: 1200px;
+            width: 90%;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text-lighter);
+        }
+
+        .feature-description {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            max-width: 1000px;
+            width: 90%;
+            background: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+            opacity: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-lighter);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: var(--text-light);
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            max-width: 900px;
+            width: 90%;
+            background: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+            opacity: 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: var(--text-lighter);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(10px);
+        }
+
+        .step-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .step-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-lighter);
+        }
+
+        .step-content p {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            .description {
+                font-size: 1rem;
+            }
+            .btn {
+                font-size: 1.1rem;
+                padding: 14px 35px;
+            }
+            .feature-card {
+                padding: 2rem 1.5rem;
+            }
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <ul class="circles">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <!-- Hero Section -->
+        <div class="hero-container">
+            <div class="logo">🏥</div>
+            <h1>Health AI</h1>
+            <p class="subtitle">Your Smart Health Companion</p>
+            <p class="description">
+                Unlock insights into your well-being with our AI-powered Diabetes Risk Assessment. 
+                Leveraging advanced machine learning, we provide a quick and confidential analysis 
+                based on your health metrics.
+            </p>
+            
+            <a href="/tool" class="btn">
+                Start Prediction 
+                <span class="btn-icon">→</span>
+            </a>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🤖</span>
+                    <h3 class="feature-title">AI-Powered Analysis</h3>
+                    <p class="feature-description">
+                        Advanced machine learning algorithms trained on extensive medical datasets for accurate predictions
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔒</span>
+                    <h3 class="feature-title">100% Confidential</h3>
+                    <p class="feature-description">
+                        Your health data is processed securely and never stored or shared with third parties
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3 class="feature-title">Instant Results</h3>
+                    <p class="feature-description">
+                        Get your diabetes risk assessment in seconds with detailed insights and recommendations
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3 class="feature-title">Comprehensive Metrics</h3>
+                    <p class="feature-description">
+                        Analysis based on multiple health indicators including glucose, BMI, blood pressure, and more
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Accuracy Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Predictions Made</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">30sec</div>
+                    <div class="stat-label">Average Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Available</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="how-it-works">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Enter Your Health Metrics</h3>
+                        <p>Input basic health information like age, glucose levels, BMI, blood pressure, and other relevant metrics</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>AI Analysis</h3>
+                        <p>Our machine learning model analyzes your data using patterns from thousands of medical cases</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Get Your Results</h3>
+                        <p>Receive a detailed risk assessment with personalized recommendations and next steps</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Take Action</h3>
+                        <p>Use insights to make informed decisions and consult with healthcare professionals when needed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>⚕️ Health AI - Empowering Better Health Decisions Through Technology</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">This tool provides risk assessments only and is not a substitute for professional medical advice</p>
+        </div>
+    </div>
+
+</body>
+</html>
